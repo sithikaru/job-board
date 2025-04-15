@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import pool from '@/app/lib/db'; // <--- our pg connection from lib/db.ts
-console.log("DB URL:", process.env.DATABASE_URL);
 
 export async function POST(request: Request) {
   try {
