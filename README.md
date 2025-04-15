@@ -1,236 +1,208 @@
-Below is a comprehensive README file that you can include in your GitHub repository. This file explains the project, the architecture, the technologies used, and details on how you built it. Feel free to adjust any wording or details to best represent your work and style.
+
+# Job Board Project
+
+_A Full Stack Developer Internship Project_
 
 ---
 
-```markdown
-# Job Board
+## Table of Contents
 
-![Job Board Banner](./banner.png)
-
-## Overview
-
-**Job Board** is a full-stack web application that serves as a mini job board. It allows users to view public job listings, register and log in, and (if authenticated) access an admin dashboard to create and delete job postings. The project demonstrates my skills in developing modern web applications using Next.js, PostgreSQL, and Tailwind CSS, along with implementing secure authentication and dynamic client-side filtering.
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Architecture & Implementation](#architecture--implementation)
+  - [Backend / API](#backend--api)
+  - [Frontend](#frontend)
+- [Security](#security)
+- [Design & UI](#design--ui)
+- [Installation & Setup](#installation--setup)
+- [Testing & Deployment](#testing--deployment)
+- [Reflection & Skills Demonstrated](#reflection--skills-demonstrated)
+- [Future Enhancements](#future-enhancements)
 
 ---
 
-## Features
+## Project Overview
 
-- **User Registration & Authentication**
-  - Secure signup and login functionality using email and password.
-  - Passwords are hashed using bcrypt for security.
-  - Authentication is implemented via JSON Web Tokens (JWT).
+This project is a complete job board application developed during my Full Stack Developer Internship. It is a mini job board where:
 
-- **Job Listings**
-  - Public page displaying all job listings in a responsive grid.
-  - Dynamic filtering of job listings by job type and location using searchable dropdowns.
-  
-- **Admin Dashboard**
-  - Accessible only to authenticated users.
-  - Supports creation and deletion of job postings.
+- **Public Users** can view job listings.
+- **Administrators** can manage job postings by creating and deleting jobs.
+- Users can **register, log in, and securely access the admin dashboard**.
 
-- **Responsive UI**
-  - Fully responsive design built with Tailwind CSS.
-  - Custom navbar with conditional rendering based on authentication status.
-  - Clean, modern, and consistent UI that adapts to mobile and desktop devices.
+The project was built using Next.js with the latest App Router, TypeScript, and Tailwind CSS. It uses PostgreSQL with raw SQL queries for data storage and JWT-based authentication to secure sensitive endpoints.
+
+---
+
+## Key Features
+
+- **User Registration & Authentication**: Secure signup and login with JWT.
+- **Public Job Listings**: A responsive page displaying job posts with filtering options.
+- **Admin Dashboard**: Protected routes for adding and deleting job posts.
+- **Searchable Dropdown Filters**: Filter jobs dynamically by job type and location using Tailwind CSS-based searchable dropdowns.
+- **Responsive Design**: Clean and modern UI with custom fonts and consistent styling.
 
 ---
 
 ## Tech Stack
 
-- **Frontend:**  
-  - [Next.js 15.3](https://nextjs.org/) with the new App Router  
-  - [React](https://reactjs.org/) (client & server components)
-  - [Tailwind CSS](https://tailwindcss.com/) for styling
-
-- **Backend:**  
-  - [Node.js](https://nodejs.org/)  
-  - [PostgreSQL](https://www.postgresql.org/) as the database
-  - [pg](https://node-postgres.com/) for raw SQL queries
-
-- **Authentication:**  
-  - JWT (JSON Web Tokens) for secure authentication  
-  - Passwords hashed using [bcryptjs](https://www.npmjs.com/package/bcryptjs)
+- **Frontend**: Next.js (App Router), React, TypeScript, Tailwind CSS
+- **Backend**: Node.js, Next.js API Routes
+- **Database**: PostgreSQL (accessed via raw SQL with the `pg` package)
+- **Authentication**: JWT (using `jsonwebtoken`), password hashing with `bcryptjs`
+- **Deployment Tools**: (Recommended) Vercel for hosting the Next.js application
 
 ---
 
-## Project Structure
+## Architecture & Implementation
 
-```plaintext
-/job-board
-├── app
-│   ├── api
-│   │   ├── auth
-│   │   │   ├── login
-│   │   │   │   └── route.ts
-│   │   │   └── register
-│   │   │       └── route.ts
-│   │   └── jobs
-│   │       ├── admin
-│   │       │   ├── [jobId]
-│   │       │   │   └── route.ts   # DELETE endpoint for job deletion
-│   │       │   └── route.ts       # POST endpoint for job creation
-│   │       └── route.ts           # GET endpoint for public job listings
-│   ├── dashboard
-│   │   └── page.tsx              # Admin dashboard page (job creation & deletion)
-│   ├── login
-│   │   └── page.tsx              # User login page
-│   ├── register
-│   │   └── page.tsx              # User registration page
-│   ├── page.tsx                  # Home page (public job listings with dynamic filtering)
-│   └── layout.tsx                # Global layout (includes Navbar)
-│
-├── components
-│   ├── Navbar.tsx                # Navbar with conditional links (Home, Dashboard, Login, Register)
-│   └── JobListWithFilter.tsx     # Client component for filtered job listings with searchable dropdowns
-│
-├── lib
-│   └── db.ts                     # PostgreSQL connection pool configuration using `pg`
-│
-├── .env                          # Environment variables (DATABASE_URL, JWT_SECRET, NEXT_PUBLIC_API_URL)
-├── package.json
-└── README.md                     # This file!
-```
+### Backend / API
+
+- **Authentication Routes**:  
+  - `/api/auth/register`: Handles user signup, validates input, hashes passwords, and stores users in PostgreSQL.
+  - `/api/auth/login`: Validates credentials, compares hashed passwords, and returns a signed JWT for authenticated sessions.
+
+- **Job Management Routes**:  
+  - `/api/jobs`: A public GET endpoint that retrieves all job posts.
+  - `/api/jobs/admin`: A protected POST endpoint for creating new job posts (requires a valid JWT in the Authorization header).
+  - `/api/jobs/admin/[jobId]`: A protected DELETE endpoint for deleting job posts based on their ID.
+
+- **Database Integration**:  
+  A single `lib/db.ts` module handles the PostgreSQL connection pooling using the `pg` package, ensuring efficient query management.
+
+### Frontend
+
+- **Public Job Listings Page**:  
+  - Located at `/` (the root).  
+  - A server component fetches job data at runtime (using `cache: 'no-store'`) and renders job cards in a responsive grid.
+
+- **Job Filtering Component**:  
+  - A client-side component (`components/JobListWithFilter.tsx`) provides searchable dropdowns for job type and location.
+  - The options are dynamically generated from the fetched job listings, with a clear filters button.
+
+- **User Authentication UI**:  
+  - **Login Page (`/login`)**: Provides a form to authenticate users and store the JWT in localStorage.
+  - **Registration Page (`/register`)**: Allows new users to create an account with form validation and redirects upon successful registration.
+  - **Dashboard (`/dashboard`)**: A protected client-side page for administrators with forms to add new job posts and delete existing ones.
+
+- **Global Layout & Navigation**:  
+  - A shared layout (`app/layout.tsx`) includes a custom Navbar (in `components/Navbar.tsx`) that displays appropriate navigation links (Home, Login, Register, Dashboard) based on the user's authentication status.
 
 ---
 
-## Installation
+## Security
 
-### Prerequisites
+- **JWT Authentication**:  
+  Secure token-based authentication is implemented. Tokens are generated on login, stored securely (e.g., in localStorage for the demo) and sent in the Authorization header for protected API routes.
 
-- Node.js (v16+ recommended)
-- PostgreSQL installed and running (or a remote instance)
+- **Password Security**:  
+  User passwords are hashed using `bcryptjs` before being stored in PostgreSQL, ensuring that raw passwords are never saved.
 
-### Setup
+- **Permission Management**:  
+  The API is designed to verify JWTs for any sensitive operations, ensuring that only authenticated users can access administrative endpoints.
 
-1. **Clone the repository:**
+---
 
+## Design & UI
+
+- **Tailwind CSS**:  
+  Used extensively throughout the project to create a modern, responsive, and clean UI.
+  
+- **Custom Fonts & Styling**:  
+  Inter font imported and applied globally through the Next.js layout to ensure design consistency.
+
+- **Responsive Components**:  
+  All pages and components adjust to different screen sizes. Dropdown filters include a subtle hover effect and match the overall white/gray aesthetic as designed.
+
+---
+
+## Installation & Setup
+
+1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/your-username/job-board.git
+   git clone https://github.com/yourusername/job-board.git
    cd job-board
    ```
 
-2. **Install dependencies:**
-
+2. **Install Dependencies**:
    ```bash
    npm install
    ```
 
-3. **Configure Environment Variables:**
-
-   Create a `.env` file in the root directory and add the following (update with your actual credentials):
-
+3. **Configure Environment Variables**:
+   Create a `.env.local` file at the root and set:
    ```env
-   DATABASE_URL=postgresql://admin:1234@localhost:5432/job_board
-   JWT_SECRET=your_very_secure_jwt_secret_here
-   NEXT_PUBLIC_API_URL=http://localhost:3000
+   DATABASE_URL="postgresql://username:password@localhost:5432/job_board"
+   JWT_SECRET="your_secure_jwt_secret"
+   NEXT_PUBLIC_API_URL="http://localhost:3000"
    ```
+   Adjust values as needed.
 
-4. **Set Up PostgreSQL:**
-
+4. **Setup PostgreSQL Database**:
    - Ensure PostgreSQL is running.
-   - Create your database (e.g., `job_board`).
-   - Run the provided schema SQL (if not using migrations):
+   - Create the `job_board` database and run the provided schema SQL script to create the `users` and `jobs` tables.
 
-     ```sql
-     CREATE TABLE users (
-       id SERIAL PRIMARY KEY,
-       email TEXT UNIQUE NOT NULL,
-       password TEXT NOT NULL,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-     );
-
-     CREATE TABLE jobs (
-       id SERIAL PRIMARY KEY,
-       title TEXT NOT NULL,
-       company TEXT NOT NULL,
-       location TEXT NOT NULL,
-       job_type TEXT NOT NULL,
-       description TEXT NOT NULL,
-       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-     );
-     ```
-
-5. **Run the Development Server:**
-
+5. **Run the Development Server**:
    ```bash
    npm run dev
    ```
-
-   The app should now be accessible at [http://localhost:3000](http://localhost:3000).
-
----
-
-## Usage
-
-### Public Job Listings
-
-- Visit the home page (`/`) to see public job listings.
-- Use the dropdown filters to search by job type or location.
-
-### User Authentication
-
-- **Register:** Visit `/register` to create a new account.
-- **Login:** Visit `/login` to sign in.
-- Upon successful login, a JWT token is stored in localStorage, and the Dashboard link becomes visible in the navbar.
-
-### Admin Dashboard
-
-- Visit `/dashboard` (accessible only when logged in) to:
-  - Create new job postings.
-  - Delete existing jobs.
-  - Manage job listings.
+   Visit [http://localhost:3000](http://localhost:3000) to see the job board in action.
 
 ---
 
-## Design & Implementation Details
+## Testing & Deployment
 
-- **Next.js App Router & TypeScript:**  
-  The project leverages the new App Router for improved routing and server rendering, ensuring optimum performance and better developer experience.
+- **Testing**:  
+  The project was thoroughly tested using Postman for API routes and manual testing for UI/UX on the browser.
 
-- **Tailwind CSS:**  
-  Utilized for rapid UI development, offering responsiveness, a clean minimalistic design, and ease of customization.
+- **Deployment**:  
+  I recommend deploying this project on Vercel for streamlined Next.js hosting. Remember to set all required environment variables in the Vercel dashboard.
 
-- **Authentication:**  
-  JWT-based authentication provides secure token generation and validation. Passwords are safely stored using bcrypt hashing.
+---
 
-- **Dynamic Filtering:**  
-  Job listings can be filtered via dynamically generated, searchable dropdowns. This shows advanced state management and client-side interactivity using React Hooks.
+## Reflection & Skills Demonstrated
 
-- **RESTful API Endpoints:**  
-  API routes are divided into public and protected (admin) endpoints ensuring security and a clear separation of concerns.
+This project demonstrates my abilities in:
+
+- **Full-Stack Development**:  
+  Designing and implementing a complete application with front-end and back-end components.
+
+- **Modern Web Technologies**:  
+  Proficient use of Next.js (with App Router), TypeScript, and Tailwind CSS.
+
+- **Database Management**:  
+  Integrating PostgreSQL using raw SQL and managing connection pooling with the `pg` library.
+
+- **Authentication & Security**:  
+  Implementing JWT-based authentication and secure password handling with bcrypt.
+
+- **UI/UX Design**:  
+  Creating a responsive and clean user interface with dynamic filtering components that enhance user experience.
+
+- **Problem Solving & Adaptability**:  
+  From establishing routes to managing state, dropdown filters, and handling errors—this project shows my capability to deliver robust and user-friendly applications.
 
 ---
 
 ## Future Enhancements
 
-- **Improved Error Handling & Notifications:**  
-  Implement a global notification system for error/success messages.
-- **Pagination or Infinite Scrolling:**  
-  For improved scalability of the job listings page.
-- **Advanced Role-Based Access Control:**  
-  Allow for different user roles (e.g., recruiter, applicant) with tailored dashboards.
-- **Enhanced UI/UX:**  
-  Additional refinements based on user feedback and evolving design trends.
+- **Pagination or Infinite Scrolling**:  
+  For a smoother user experience when the job listing grows large.
+  
+- **Role-Based Access Control (RBAC)**:  
+  Enhance security by adding multiple roles (e.g., admin, user).
+
+- **Enhanced Error Handling & Logging**:  
+  Implement robust logging and error tracking for production readiness.
+
+- **Unit and Integration Testing**:  
+  Incorporate automated tests using Jest and React Testing Library.
+
+- **Progressive Web App (PWA)**:  
+  Make the application installable and work offline.
 
 ---
 
 ## Conclusion
 
-This Job Board project showcases my ability to build a full-stack application from scratch using modern technologies. The project features secure authentication, dynamic user interactions, clean design with Tailwind CSS, and robust API implementations with PostgreSQL and raw SQL queries. I welcome any questions or feedback regarding the implementation details and design decisions.
-
----
-
-## License
-
-This project is open source under the [MIT License](LICENSE).
-
-```
-
----
-
-## Final Notes
-
-- Make sure to update URLs, environment variable values, and any personal details before publishing the repository.
-- You can add any screenshots, diagrams, or additional documentation as needed.
-
-This README should give interviewers a clear picture of your project architecture, technical skills, and design principles used throughout the job board application. Let me know if you need any further modifications or additional sections!
+This job board project is a showcase of my full-stack development skills—from designing a clean UI with Tailwind CSS to building secure and efficient backend APIs with Next.js and PostgreSQL. The project is engineered for scalability, usability, and ease of deployment. I look forward to discussing this project and my role in it further.
