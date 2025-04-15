@@ -8,7 +8,7 @@ if (!process.env.JWT_SECRET) {
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Record<string, string> }
+  { params }: { params: { jobId: string } }
 ) {
   try {
     // Check for the Authorization header with Bearer token
