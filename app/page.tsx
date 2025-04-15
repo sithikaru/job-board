@@ -1,5 +1,6 @@
 // app/page.tsx
 import React from 'react';
+import JobListWithFilter from '../app/components/JobListWithFilter';
 
 interface Job {
   id: number;
@@ -11,10 +12,7 @@ interface Job {
   created_at: string;
 }
 
-// This async function fetches job listings from your API endpoint.
-// We're setting cache: 'no-store' to always get the latest data.
-// In production, you may adjust caching as needed.
-async function getJobs() {
+async function getJobs(): Promise<Job[]> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
   const res = await fetch(`${baseUrl}/api/jobs`, {
     cache: 'no-store',
@@ -37,36 +35,23 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <main className="min-h-screen bg-white py-10">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-extrabold text-gray-900">Job Board</h1>
-          <p className="mt-2 text-lg text-gray-600">Find the perfect job for you</p>
+          <p className="mt-2 text-lg text-gray-600">
+            Find the perfect job for you
+          </p>
         </header>
 
-        {/* Job Listings */}
+        {/* Job Listings with Filtering */}
         {jobs.length === 0 ? (
-          <div className="text-center text-gray-500">No jobs available at the moment.</div>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => (
-              <div
-                key={job.id}
-                className="bg-white shadow-md rounded-lg p-6 transition transform hover:scale-105 hover:shadow-xl"
-              >
-                <h2 className="text-xl font-bold text-gray-800">{job.title}</h2>
-                <p className="mt-1 text-gray-600">{job.company}</p>
-                <p className="mt-1 text-sm text-gray-500">
-                  {job.location} • {job.job_type}
-                </p>
-                <p className="mt-4 text-gray-700">{job.description}</p>
-                <p className="mt-4 text-xs text-gray-400">
-                  Posted on: {new Date(job.created_at).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
+          <div className="text-center text-gray-500">
+            No jobs available at the moment.
           </div>
+        ) : (
+          <JobListWithFilter jobs={jobs} />
         )}
       </div>
     </main>
