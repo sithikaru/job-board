@@ -1,4 +1,3 @@
-// app/api/jobs/admin/[jobId]/route.ts
 import { NextResponse } from 'next/server';
 import pool from '@/app/lib/db';
 import jwt from 'jsonwebtoken';
@@ -9,7 +8,7 @@ if (!process.env.JWT_SECRET) {
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { jobId: string } }
+  { params }: { params: Record<string, string> }
 ) {
   try {
     // Check for the Authorization header with Bearer token
