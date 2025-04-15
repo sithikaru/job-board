@@ -12,9 +12,11 @@ interface Job {
   created_at: string;
 }
 
-async function getJobs(): Promise<Job[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// app/page.tsx
+async function getJobs() {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://job-board-git-main-zijja3dgmailcoms-projects.vercel.app';
   const res = await fetch(`${baseUrl}/api/jobs`, {
+    // forces dynamic rendering
     cache: 'no-store',
   });
 
@@ -25,6 +27,7 @@ async function getJobs(): Promise<Job[]> {
   const { jobs } = await res.json();
   return jobs;
 }
+
 
 export default async function HomePage() {
   let jobs: Job[] = [];
